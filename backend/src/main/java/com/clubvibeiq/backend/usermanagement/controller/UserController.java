@@ -1,8 +1,8 @@
-package com.clubvibeiq.backend.controller;
+package com.clubvibeiq.backend.usermanagement.controller;
 
-import com.clubvibeiq.backend.dto.UserRequestDto;
-import com.clubvibeiq.backend.dto.UserResponseDto;
-import com.clubvibeiq.backend.service.UserService;
+import com.clubvibeiq.backend.usermanagement.dto.UserRequestDto;
+import com.clubvibeiq.backend.usermanagement.dto.UserResponseDto;
+import com.clubvibeiq.backend.usermanagement.service.UserService;
 import com.clubvibeiq.backend.utils.GenericResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

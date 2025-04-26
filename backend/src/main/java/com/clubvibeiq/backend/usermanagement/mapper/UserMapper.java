@@ -1,8 +1,8 @@
-package com.clubvibeiq.backend.mapper;
+package com.clubvibeiq.backend.usermanagement.mapper;
 
-import com.clubvibeiq.backend.dto.UserRequestDto;
-import com.clubvibeiq.backend.dto.UserResponseDto;
-import com.clubvibeiq.backend.entity.User;
+import com.clubvibeiq.backend.usermanagement.dto.UserRequestDto;
+import com.clubvibeiq.backend.usermanagement.dto.UserResponseDto;
+import com.clubvibeiq.backend.usermanagement.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;

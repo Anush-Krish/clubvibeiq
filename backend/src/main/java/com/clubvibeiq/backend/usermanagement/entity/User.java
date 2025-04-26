@@ -1,4 +1,4 @@
-package com.clubvibeiq.backend.entity;
+package com.clubvibeiq.backend.usermanagement.entity;
 
 import com.clubvibeiq.backend.enums.GenderType;
 import com.clubvibeiq.backend.utils.model.BaseEntity;

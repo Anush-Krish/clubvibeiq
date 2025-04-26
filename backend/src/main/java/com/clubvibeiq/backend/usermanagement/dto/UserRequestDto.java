@@ -1,20 +1,19 @@
-package com.clubvibeiq.backend.dto;
+package com.clubvibeiq.backend.usermanagement.dto;
 
 import com.clubvibeiq.backend.enums.GenderType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Getter
 @Setter
-public class UserResponseDto {
-    private UUID userId;
+public class UserRequestDto {
 
     private String name;
     private String email;
+    @NonNull
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

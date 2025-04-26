@@ -1,10 +1,10 @@
-package com.clubvibeiq.backend.service;
+package com.clubvibeiq.backend.usermanagement.service;
 
-import com.clubvibeiq.backend.dto.UserRequestDto;
-import com.clubvibeiq.backend.dto.UserResponseDto;
-import com.clubvibeiq.backend.entity.User;
-import com.clubvibeiq.backend.mapper.UserMapper;
-import com.clubvibeiq.backend.repository.UserRepository;
+import com.clubvibeiq.backend.usermanagement.dto.UserRequestDto;
+import com.clubvibeiq.backend.usermanagement.dto.UserResponseDto;
+import com.clubvibeiq.backend.usermanagement.entity.User;
+import com.clubvibeiq.backend.usermanagement.mapper.UserMapper;
+import com.clubvibeiq.backend.usermanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
