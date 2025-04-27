@@ -1,10 +1,13 @@
 package com.clubvibeiq.backend.external.spotify;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Base64;
 import java.util.Map;
@@ -34,23 +37,30 @@ public class SpotifyAuthService {
                 "&scope=" + scopes;
     }
 
-    public String exchangeCodeForAccessToken(String code) {
+    public Mono<String> exchangeCodeForAccessToken(String code) {
         String credentials = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
 
-        Map<String, String> response = webClient.post()
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "authorization_code");
+        formData.add("code", code);
+        formData.add("redirect_uri", redirectUri);
+
+        return webClient.post()
                 .uri("https://accounts.spotify.com/api/token")
                 .header("Authorization", "Basic " + credentials)
-                .bodyValue("grant_type=authorization_code" +
-                        "&code=" + code +
-                        "&redirect_uri=" + redirectUri)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> Mono.error(new RuntimeException("Error fetching access token: " + response.statusCode())))
                 .bodyToMono(Map.class)
-                .block();
-
-        String accessToken = response.get("access_token");
-
-        // Example: Fetch playlists immediately after login
-        return spotifyClient.fetchUserPlaylists(accessToken);
+                .flatMap(response -> {
+                    String accessToken = (String) response.get("access_token");
+                    if (accessToken != null) {
+                        return spotifyClient.fetchUserPlaylists(accessToken);
+                    } else {
+                        return Mono.error(new RuntimeException("Access token not found in response"));
+                    }
+                });
     }
 }
-

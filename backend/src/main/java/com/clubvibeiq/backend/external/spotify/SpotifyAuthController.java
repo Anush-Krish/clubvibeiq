@@ -3,8 +3,9 @@ package com.clubvibeiq.backend.external.spotify;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class SpotifyAuthController {
     }
 
     @GetMapping("/spotify/callback")
-    public String spotifyCallback(@RequestParam String code) {
+    public Mono<String> spotifyCallback(@RequestParam String code) {
         return spotifyAuthService.exchangeCodeForAccessToken(code);
     }
 }
