@@ -2,6 +2,7 @@ package com.clubvibeiq.backend.external.spotify;
 
 import com.clubvibeiq.backend.userpreference.service.UserPreferenceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -10,10 +11,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SpotifyAuthService {
@@ -31,12 +35,20 @@ public class SpotifyAuthService {
     private final UserPreferenceService preferenceService;
 
     public String buildAuthorizationUrl() {
-        String scopes = "user-read-private user-read-email playlist-read-private playlist-read-collaborative";
-        return "https://accounts.spotify.com/authorize?" +
-                "client_id=" + clientId +
-                "&response_type=code" +
-                "&redirect_uri=" + redirectUri +
-                "&scope=" + scopes;
+        try {
+            String scopes = URLEncoder.encode(
+                    "user-read-private user-top-read user-read-email playlist-read-private playlist-read-collaborative",
+                    StandardCharsets.UTF_8
+            );
+            return "https://accounts.spotify.com/authorize?" +
+                    "client_id=" + clientId +
+                    "&response_type=code" +
+                    "&redirect_uri=" + redirectUri +
+                    "&scope=" + scopes;
+        } catch (Exception e) {
+            log.error("Failed to authorize via spotify{}", e.getMessage());
+            throw new RuntimeException("Error in spotify authorization");
+        }
     }
 
     public Mono<Map<String, Object>> exchangeCodeForAccessToken(String code) {

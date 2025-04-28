@@ -2,7 +2,6 @@ package com.clubvibeiq.backend.userpreference.service;
 
 import com.clubvibeiq.backend.external.spotify.SpotifyService;
 import com.clubvibeiq.backend.userpreference.entity.UserPreference;
-import com.clubvibeiq.backend.userpreference.mapper.UserPreferenceMapper;
 import com.clubvibeiq.backend.userpreference.repository.UserPreferenceRepository;
 import com.clubvibeiq.backend.utils.model.MusicLibrary;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,7 +14,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -40,51 +38,67 @@ public class UserPreferenceService {
      */
     public Mono<Map<String, List<String>>> fetchUserLibrary(String accessToken) {
         Mono<String> playlistsMono = spotifyService.fetchUserPlaylists(accessToken);
+        Mono<String> topTracksMono = spotifyService.fetchUserTopTracks(accessToken);
 
         UserPreference preference = new UserPreference();
         preference.setIsActive(true);
 
-        return playlistsMono
+        return Mono.zip(playlistsMono, topTracksMono)
                 .publishOn(Schedulers.boundedElastic())
-                .flatMap(playlistsResponse -> {
+                .flatMap(tuple -> {
+                    String playlistsResponse = tuple.getT1();
+                    String topTracksResponse = tuple.getT2();
+
                     ObjectMapper mapper = new ObjectMapper();
                     List<String> playlistSongs = new ArrayList<>();
+                    List<String> topTracks = new ArrayList<>();
 
                     try {
+                        // Parse playlists
                         JsonNode playlistsRoot = mapper.readTree(playlistsResponse);
                         JsonNode playlistsItems = playlistsRoot.path("items");
 
-                        if (playlistsItems.isArray()) {
-                            List<Mono<List<String>>> songsMonos = new ArrayList<>();
+                        List<Mono<List<String>>> songsMonos = new ArrayList<>();
 
+                        if (playlistsItems.isArray()) {
                             for (JsonNode playlist : playlistsItems) {
                                 String playlistId = playlist.path("id").asText();
                                 songsMonos.add(spotifyService.fetchPlaylistTracks(accessToken, playlistId, 10));
                             }
-
-                            return Flux.merge(songsMonos)
-                                    .collectList()
-                                    .flatMap(allSongsLists -> {
-                                        for (List<String> songs : allSongsLists) {
-                                            playlistSongs.addAll(songs);
-                                        }
-
-                                        MusicLibrary musicLibrary = new MusicLibrary();
-                                        musicLibrary.setPlaylistSongs(playlistSongs);
-                                        preference.setMusicLibrary(musicLibrary);
-
-                                        // Save using JPA repo inside fromCallable
-                                        return Mono.fromCallable(() -> userPreferenceRepository.save(preference))
-                                                .subscribeOn(Schedulers.boundedElastic())
-                                                .thenReturn(Collections.singletonMap("playlistSongs", playlistSongs));
-                                    });
-                        } else {
-                            return Mono.fromCallable(() -> userPreferenceRepository.save(preference))
-                                    .subscribeOn(Schedulers.boundedElastic())
-                                    .thenReturn(Collections.singletonMap("playlistSongs", Collections.emptyList()));
                         }
+
+                        // Parse top tracks
+                        JsonNode topTracksRoot = mapper.readTree(topTracksResponse);
+                        JsonNode topTracksItems = topTracksRoot.path("items");
+
+                        if (topTracksItems.isArray()) {
+                            for (JsonNode track : topTracksItems) {
+                                String trackName = track.path("name").asText();
+                                topTracks.add(trackName);
+                            }
+                        }
+
+                        return Flux.merge(songsMonos)
+                                .collectList()
+                                .flatMap(allSongsLists -> {
+                                    for (List<String> songs : allSongsLists) {
+                                        playlistSongs.addAll(songs);
+                                    }
+
+                                    MusicLibrary musicLibrary = new MusicLibrary();
+                                    musicLibrary.setPlaylistSongs(playlistSongs);
+                                    musicLibrary.setTopTracks(topTracks);
+                                    preference.setMusicLibrary(musicLibrary);
+
+                                    return Mono.fromCallable(() -> userPreferenceRepository.save(preference))
+                                            .subscribeOn(Schedulers.boundedElastic())
+                                            .thenReturn(Map.of(
+                                                    "playlistSongs", playlistSongs,
+                                                    "topTracks", topTracks
+                                            ));
+                                });
                     } catch (Exception e) {
-                        return Mono.error(new RuntimeException("Failed to parse Spotify playlists response", e));
+                        return Mono.error(new RuntimeException("Failed to parse Spotify responses", e));
                     }
                 });
     }
