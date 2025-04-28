@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -13,4 +14,6 @@ import java.util.List;
 public class MusicLibrary implements Serializable {
     private List<String> topTracks;
     private List<String> playlistSongs;
+    private List<String> topArtists;
+    private Map<String, List<String>> artistGenres;
 }

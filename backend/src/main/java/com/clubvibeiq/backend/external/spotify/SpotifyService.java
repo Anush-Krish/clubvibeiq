@@ -48,6 +48,20 @@ public class SpotifyService {
                 .bodyToMono(String.class);
     }
 
+    public Mono<String> fetchUserTopArtists(String accessToken) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/me/top/artists")
+                        .queryParam("limit", 30)
+                        .build())
+                .header(AUTHORIZATION, BEARER + accessToken)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> Mono.error(new RuntimeException("Error fetching top artists: " + response.statusCode())))
+                .bodyToMono(String.class);
+    }
+
+
     public Mono<List<String>> fetchPlaylistTracks(String accessToken, String playlistId, int limit) {
         return webClient.get()
                 .uri("/playlists/" + playlistId + "/tracks?limit=" + limit)
