@@ -25,5 +25,4 @@ public class UserPreference {
     @Column(columnDefinition = "jsonb")
     @Type(JsonType.class)
     private MusicLibrary musicLibrary;
-
 }

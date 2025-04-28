@@ -11,11 +11,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MusicLibrary implements Serializable {
-
-    private List<MusicTrack> topTracks;
-    private List<MusicArtist> topArtists;
-    private List<MusicTrack> recentlyPlayed;
-    private List<String> genres;
-    private List<MusicPlaylist> playlists;
-    private List<String> language;
+    private List<String> topTracks;
+    private List<String> playlistSongs;
 }

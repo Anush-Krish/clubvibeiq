@@ -1,7 +1,10 @@
 package com.clubvibeiq.backend.userpreference.service;
 
 import com.clubvibeiq.backend.external.spotify.SpotifyService;
+import com.clubvibeiq.backend.userpreference.entity.UserPreference;
+import com.clubvibeiq.backend.userpreference.mapper.UserPreferenceMapper;
 import com.clubvibeiq.backend.userpreference.repository.UserPreferenceRepository;
+import com.clubvibeiq.backend.utils.model.MusicLibrary;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,8 +28,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class UserPreferenceService {
-    private final UserPreferenceRepository preferenceRepository;
     private final SpotifyService spotifyService;
+    private final UserPreferenceRepository userPreferenceRepository;
+
 
     /**
      * this method fetches playlistIds, topTracks , and 10 songs from each playlist.
@@ -34,10 +41,12 @@ public class UserPreferenceService {
     public Mono<Map<String, List<String>>> fetchUserLibrary(String accessToken) {
         Mono<String> playlistsMono = spotifyService.fetchUserPlaylists(accessToken);
 
+        UserPreference preference = new UserPreference();
+        preference.setIsActive(true);
+
         return playlistsMono
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap(playlistsResponse -> {
-                    Map<String, List<String>> userLibrary = new HashMap<>();
                     ObjectMapper mapper = new ObjectMapper();
                     List<String> playlistSongs = new ArrayList<>();
 
@@ -55,16 +64,24 @@ public class UserPreferenceService {
 
                             return Flux.merge(songsMonos)
                                     .collectList()
-                                    .map(allSongsLists -> {
+                                    .flatMap(allSongsLists -> {
                                         for (List<String> songs : allSongsLists) {
                                             playlistSongs.addAll(songs);
                                         }
-                                        userLibrary.put("playlistSongs", playlistSongs);
-                                        return userLibrary;
+
+                                        MusicLibrary musicLibrary = new MusicLibrary();
+                                        musicLibrary.setPlaylistSongs(playlistSongs);
+                                        preference.setMusicLibrary(musicLibrary);
+
+                                        // Save using JPA repo inside fromCallable
+                                        return Mono.fromCallable(() -> userPreferenceRepository.save(preference))
+                                                .subscribeOn(Schedulers.boundedElastic())
+                                                .thenReturn(Collections.singletonMap("playlistSongs", playlistSongs));
                                     });
                         } else {
-                            userLibrary.put("playlistSongs", Collections.emptyList());
-                            return Mono.just(userLibrary);
+                            return Mono.fromCallable(() -> userPreferenceRepository.save(preference))
+                                    .subscribeOn(Schedulers.boundedElastic())
+                                    .thenReturn(Collections.singletonMap("playlistSongs", Collections.emptyList()));
                         }
                     } catch (Exception e) {
                         return Mono.error(new RuntimeException("Failed to parse Spotify playlists response", e));
