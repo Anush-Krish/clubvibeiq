@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class SpotifyAuthController {
@@ -19,7 +21,7 @@ public class SpotifyAuthController {
     }
 
     @GetMapping("/spotify/callback")
-    public Mono<String> spotifyCallback(@RequestParam String code) {
+    public Mono<Map<String, Object>> spotifyCallback(@RequestParam String code) {
         return spotifyAuthService.exchangeCodeForAccessToken(code);
     }
 }
