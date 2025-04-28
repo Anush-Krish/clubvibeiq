@@ -13,10 +13,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 
 /**
@@ -46,6 +44,8 @@ public class UserPreferenceService {
 
         UserPreference preference = new UserPreference();
         preference.setIsActive(true);
+        preference.setCreatedAt(Date.from(Instant.now()));
+        preference.setUpdatedAt(Date.from(Instant.now()));
 
         return Mono.zip(playlistsMono, topTracksMono, topArtistsMono)
                 .publishOn(Schedulers.boundedElastic())

@@ -1,5 +1,6 @@
 package com.clubvibeiq.backend.userpreference.entity;
 
+import com.clubvibeiq.backend.utils.model.BaseEntity;
 import com.clubvibeiq.backend.utils.model.MusicLibrary;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Table(name = "user_preferences")
 @Getter
 @Setter
-public class UserPreference {
+public class UserPreference extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID preferenceId;
