@@ -143,4 +143,25 @@ public class UserPreferenceService {
     }
 
 
+    // this method makes external api call to ml-engine
+    //to fetch current crowd preference using the data
+    public Object fetchSavedPreference(UUID clubId) {
+        try {
+            List<UserPreference> preferenceList = userPreferenceRepository.
+                    findByClubIdAndIsActive(clubId, Boolean.TRUE);
+            List<MusicLibrary> musicLibraryList = new ArrayList<>();
+            //mapping the music libraries
+            preferenceList.forEach(userPreference -> musicLibraryList.add(userPreference.getMusicLibrary()));
+            //make external api call to fetch preference by sending musicLibraryList
+
+
+            return null;
+
+        } catch (Exception e) {
+            log.error("Error fetching crowd preference for clubId{}", clubId);
+            throw new RuntimeException("Error fetching crowd preference");
+        }
+    }
+
+
 }
