@@ -1,20 +1,13 @@
-from pydantic import EmailStr
+from typing import List, Optional
 from app.schemas.base import CamelModel
+from pydantic import BaseModel
 
-
-
-class UserInference(CamelModel):
-   # club_id: uuid.UUID
-    top_tracks: List[str]
-    top_artists: List[str]
-    artist_genres: List[str]
-    top_playlist_tracks: List[str]
-
+class UserInference(BaseModel):
+    topTracks: Optional[List[str]] = None
+    playlistSongs: List[str]
+    topArtists: Optional[List[str]] = None
+    artistGenres: Optional[dict] = None
 
 class InferenceResponse(CamelModel):
     suggested_tracks: List[str]
     message: str
-
-
-class Config:
-    orm_mode = True
