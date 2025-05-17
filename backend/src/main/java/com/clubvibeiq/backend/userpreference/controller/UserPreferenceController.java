@@ -1,5 +1,6 @@
 package com.clubvibeiq.backend.userpreference.controller;
 
+import com.clubvibeiq.backend.userpreference.dto.PreferenceResponseDto;
 import com.clubvibeiq.backend.userpreference.service.UserPreferenceService;
 import com.clubvibeiq.backend.utils.GenericResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserPreferenceController {
      * @return -> Object of crowd preference.
      */
     @GetMapping("/{clubId}")
-    public ResponseEntity<GenericResponse<Object>> fetchCrowdPreference(@PathVariable UUID clubId) {
+    public ResponseEntity<GenericResponse<PreferenceResponseDto>> fetchCrowdPreference(@PathVariable UUID clubId) {
         return ResponseEntity.status(HttpStatus.OK).
                 body(GenericResponse.success(userPreferenceService.fetchSavedPreference(clubId)));
     }
