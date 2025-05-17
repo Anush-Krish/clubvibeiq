@@ -1,4 +1,4 @@
-package com.clubvibeiq.backend.userpreference.dto;
+package com.clubvibeiq.backend.preference.dto;
 
 import com.clubvibeiq.backend.utils.model.BaseDto;
 import com.clubvibeiq.backend.utils.model.MusicLibrary;

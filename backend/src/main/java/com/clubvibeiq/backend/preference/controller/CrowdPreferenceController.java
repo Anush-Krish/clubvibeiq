@@ -1,7 +1,7 @@
-package com.clubvibeiq.backend.userpreference.controller;
+package com.clubvibeiq.backend.preference.controller;
 
-import com.clubvibeiq.backend.userpreference.dto.PreferenceResponseDto;
-import com.clubvibeiq.backend.userpreference.service.UserPreferenceService;
+import com.clubvibeiq.backend.preference.dto.PreferenceResponseDto;
+import com.clubvibeiq.backend.preference.service.CrowdPreferenceService;
 import com.clubvibeiq.backend.utils.GenericResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/infer")
 @RequiredArgsConstructor
-public class UserPreferenceController {
+public class CrowdPreferenceController {
 
-    private final UserPreferenceService userPreferenceService;
+    private final CrowdPreferenceService crowdPreferenceService;
 
     /**
      * fetch crowd preference by dj.
@@ -29,6 +29,6 @@ public class UserPreferenceController {
     @GetMapping("/{clubId}")
     public ResponseEntity<GenericResponse<PreferenceResponseDto>> fetchCrowdPreference(@PathVariable UUID clubId) {
         return ResponseEntity.status(HttpStatus.OK).
-                body(GenericResponse.success(userPreferenceService.fetchSavedPreference(clubId)));
+                body(GenericResponse.success(crowdPreferenceService.fetchCrowdPreferences(clubId)));
     }
 }

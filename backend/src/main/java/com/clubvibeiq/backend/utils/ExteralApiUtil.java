@@ -1,6 +1,6 @@
 package com.clubvibeiq.backend.utils;
 
-import com.clubvibeiq.backend.userpreference.dto.PreferenceResponseDto;
+import com.clubvibeiq.backend.preference.dto.PreferenceResponseDto;
 import com.clubvibeiq.backend.utils.model.MusicLibrary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

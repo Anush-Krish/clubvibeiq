@@ -1,6 +1,6 @@
 package com.clubvibeiq.backend.external.spotify;
 
-import com.clubvibeiq.backend.userpreference.service.UserPreferenceService;
+import com.clubvibeiq.backend.preference.service.UserPreferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

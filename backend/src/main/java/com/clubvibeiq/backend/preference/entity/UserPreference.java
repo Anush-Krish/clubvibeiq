@@ -1,4 +1,4 @@
-package com.clubvibeiq.backend.userpreference.entity;
+package com.clubvibeiq.backend.preference.entity;
 
 import com.clubvibeiq.backend.utils.model.BaseEntity;
 import com.clubvibeiq.backend.utils.model.MusicLibrary;

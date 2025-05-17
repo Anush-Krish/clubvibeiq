@@ -1,6 +1,6 @@
-package com.clubvibeiq.backend.userpreference.repository;
+package com.clubvibeiq.backend.preference.repository;
 
-import com.clubvibeiq.backend.userpreference.entity.UserPreference;
+import com.clubvibeiq.backend.preference.entity.UserPreference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

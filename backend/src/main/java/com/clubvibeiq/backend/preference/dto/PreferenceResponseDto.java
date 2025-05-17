@@ -1,4 +1,4 @@
-package com.clubvibeiq.backend.userpreference.dto;
+package com.clubvibeiq.backend.preference.dto;
 
 import lombok.Getter;
 import lombok.Setter;
