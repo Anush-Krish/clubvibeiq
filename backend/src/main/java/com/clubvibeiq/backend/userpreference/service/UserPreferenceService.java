@@ -28,6 +28,7 @@ public class UserPreferenceService {
     public static final String ITEMS = "items";
     private final SpotifyService spotifyService;
     private final UserPreferenceRepository userPreferenceRepository;
+    private final ObjectMapper objectMapper;
 
 
     /**
@@ -137,7 +138,7 @@ public class UserPreferenceService {
                                     "playlistSongs", playlistSongs,
                                     "topTracks", topTracks,
                                     "topArtists", topArtists,
-                                    "artistGenres", artistGenres // Return genres too
+                                    "artistGenres", artistGenres
                             ));
                 });
     }
@@ -153,7 +154,7 @@ public class UserPreferenceService {
             //mapping the music libraries
             preferenceList.forEach(userPreference -> musicLibraryList.add(userPreference.getMusicLibrary()));
             //make external api call to fetch preference by sending musicLibraryList
-
+            log.info("Music Library for clubId{}: {}", clubId, musicLibraryList);
 
             return null;
 

@@ -1,15 +1,21 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.schemas.inference import InferenceResponse
-from app.crud import user as crud_user
+from app.schemas.inference import InferenceResponse,UserInference
+from app.services import inference as infer_service
+from fastapi import Query
+from typing import List
+
 
 router = APIRouter()
 
-# endpoints of crud
-@router.get("/", response_model=InferenceResponse)
-def get_infer(user: UserCreate, db: Session = Depends(get_db)):
-    return crud_user.create_user(db, user)
+
+@router.post("/", response_model=InferenceResponse)
+def get_infer(user_infer_list: List[UserInference] ):
+
+
+    return infer_service.get_inference()
 
 # @router.get("/{user_id}", response_model=UserResponse)
 # def get_user(user_id: int, db: Session = Depends(get_db)):
