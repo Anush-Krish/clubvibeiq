@@ -27,7 +27,7 @@ public class ExteralApiUtil {
     private String mlUrl;
 
     public PreferenceResponseDto callMlInferenceApi(List<MusicLibrary> musicLibraryList) {
-        String url = mlUrl + "/infer";
+        String url = mlUrl + "/infer/enhanced";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
